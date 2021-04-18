@@ -10,7 +10,12 @@ namespace EvidentaProduse
 
     public class Pret
     {
-        public static Dictionary<Moneda, decimal> Curs;
+        public static Dictionary<Moneda, decimal> Curs = new Dictionary<Moneda, decimal>()
+        {
+            /*{Moneda.LEU, 1m},
+            {Moneda.EUR, },
+            {Moneda.USD, }*/
+        };
         public Moneda Moneda { get; set; }
         
         public decimal ValoareCurs(Moneda moneda) // intoarce valoare in functie de curs pentru moneda primita

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvidentaProduse.Auxiliare;
 
 namespace EvidentaProduse
 {
@@ -16,7 +17,6 @@ namespace EvidentaProduse
 
         public bool Notifica(string mesaj)
         {
-
             if (mesaj.Length > 60)
             {
                 return false;
@@ -25,8 +25,43 @@ namespace EvidentaProduse
             {
                 throw new OutOfMemoryException("Prea multe mesaje in Inbox!!!");
             }
+
             Inbox[++nrMesajeInbox] = mesaj;
+
             return true;
         }
+
+        public override string ToString()
+        {
+            string mesaj = $"a. Email: <{Email}>\n" +
+                "b. Produse: ";
+
+            string temp = "";
+            for(int i = 0; i < ProduseFavorite.Count; i++)
+            {
+                string produsI = Produs.NameForId[ProduseFavorite[i]] + $" {i + 1}";
+
+                temp += $"<{produsI}>";
+
+                if (i != ProduseFavorite.Count - 1)
+                {
+                    temp += ", ";
+                }
+            }
+
+            mesaj += temp + "\n";
+            mesaj += "c. Inbox:\n";
+
+            temp = "";
+            for(int i = 1; i <= nrMesajeInbox; i++)
+            {
+                temp += $"{i.ToRoman()}. <{Inbox[i]}>\n".PadLeft(15);
+            }
+
+            mesaj += temp+"\n";
+
+            return mesaj;
+        }
     }
+
 }

@@ -8,8 +8,6 @@ namespace EvidentaProduse
 {
     public class Catalog : List<Produs>
     {
-        public DateTime? PerioadaStart { get; set; }
-        public DateTime? PerioadaStop { get; set; }
         public List<Reducere> Reduceri { get; set; }
     }
 }
