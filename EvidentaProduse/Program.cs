@@ -92,30 +92,50 @@ namespace EvidentaProduse
 
             };
 
-            Catalog catalog = new Catalog
+            Catalog catalog = new Catalog();
+
+            catalog.InitializeazaCatalog(Producatori);
+
+            catalog.AfiseazaCatalog();
+
+            var Clienti = new List<Client>()
             {
-                Reduceri = new List<Reducere>
+                new Client
                 {
-                    Producatori[0].Reduceri[0],
-                    Producatori[0].Reduceri[1],
-                    Producatori[0].Reduceri[2],
-                    Producatori[1].Reduceri[0],
-                    Producatori[1].Reduceri[1],
-                    Producatori[1].Reduceri[2],
-                    Producatori[2].Reduceri[0],
-                    Producatori[2].Reduceri[1],
-                    Producatori[2].Reduceri[2]
+                    Email = "ardut2004@gmail.com",
+                    Moneda = Moneda.LEU,
+                    ProduseFavorite = new List<Guid>()
+                    {
+                        catalog[0].Id,
+                        catalog[2].Id
+                    }
+                },
+                new Client
+                {
+                    Email = "andreirbancila@gmail.com",
+                    Moneda = Moneda.EUR,
+                    ProduseFavorite = new List<Guid>()
+                    {
+                        catalog[1].Id,
+                        catalog[2].Id
+                    }
+                },
+                new Client
+                {
+                    Email = "bigbirdsmurderer@yahoo.com",
+                    Moneda = Moneda.USD,
+                    ProduseFavorite = new List<Guid>()
+                    {
+                        catalog[0].Id,
+                        catalog[1].Id
+                    }
                 }
             };
 
-            /*catalog.Add(new Produs
+            foreach(Client client in Clienti)
             {
-                Id = Guid.NewGuid(),
-                Pret = new Pret
-                {
-
-                }
-            }); */
+                Console.WriteLine(client.ToString());
+            }
 
         }
     }

@@ -54,7 +54,6 @@ namespace EvidentaProduse.Auxiliare
             return ((date >= startDate && date <= endDate));
         }
 
-
         public static string ToRoman(this int number)
         {
             if ((number < 0) || (number > 3999)) throw new ArgumentOutOfRangeException("insert value betwheen 1 and 3999");

@@ -25,7 +25,7 @@ namespace EvidentaProduse
             {
                 if (NameForId.ContainsKey(Id))
                 {
-                    NameForId[Id] = value; ;
+                    NameForId[Id] = value; 
                 }
                 else
                 {
@@ -36,6 +36,18 @@ namespace EvidentaProduse
         }
 
         private string name;
+
+        public override string ToString()
+        {
+            string mesaj = "";
+
+            mesaj += $"Nume: <{Name}>\n" +
+                $"ID: <{Id.ToString()}>\n" +
+                $"Producator: <{Producator.Name}>\n" +
+                $"Stoc: <{Stoc}>\n";
+
+            return mesaj;
+        }
 
     }
 }

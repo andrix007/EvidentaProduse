@@ -39,7 +39,8 @@ namespace EvidentaProduse
             string temp = "";
             for(int i = 0; i < ProduseFavorite.Count; i++)
             {
-                string produsI = Produs.NameForId[ProduseFavorite[i]] + $" {i + 1}";
+                string produsI;
+                Produs.NameForId.TryGetValue(ProduseFavorite[i], out produsI);
 
                 temp += $"<{produsI}>";
 

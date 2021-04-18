@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvidentaProduse
 {
+
     public class Producator
     {
         public string Name { get; set; }
