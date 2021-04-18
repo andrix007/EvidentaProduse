@@ -2,44 +2,75 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 
 using HtmlAgilityPack;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Net;
-using System.Text;
-using System.IO;
-
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace EvidentaProduse.Auxiliare
 {
-    public class CursLive
+    public static class CursLive
     {
-            public static void WriteSpans()
+        public static decimal GetBNRCurs(string s, Moneda moneda)
+        {
+            decimal Curs;
+
+            string temp = (moneda == Moneda.EUR) ? "EUR" : "USD";
+
+            string nr = "";
+            int cnt = 0;
+
+            for(int i = s.IndexOf(temp)+3; ++cnt <= 5 ; i++)
             {
-                string fullUrl = "https://www.google.com/search?q=1+ron+to+usd&rlz=1C1CHWL_roRO937RO937&oq=1+ron+to+usd&aqs=chrome.0.0l2j0i22i30l2j0i10i22i30j0i22i30j69i60l2.4018j1j1&sourceid=chrome&ie=UTF-8";
-                List<string> programmerLinks = new List<string>();
-
-                var options = new ChromeOptions()
-                {
-                    BinaryLocation = @"D:\Internship\EvidentaProduse\EvidentaProduse\Resurse\chromedriver.exe"
-                };
-
-                options.AddArguments(new List<string>() { "headless", "disable-gpu" });
-                var browser = new ChromeDriver(options);
-                browser.Navigate().GoToUrl(fullUrl);
-                var spans = browser.FindElementsByTagName("span");
-
-                foreach (var span in spans)
-                {
-                    Console.WriteLine(span.Text);
-                }
-
+                nr += s[i];
             }
 
+            Curs = Decimal.Parse(nr);
+
+            return Curs;
+        }
+
+        public static async void GetHtmlAsync() // initializeaza la cursul BNR din momentul rularii programului
+        {
+            Console.WriteLine("Se initializeaza cursul valutar...");
+
+            string url = @"https://www.bnr.ro/Home.aspx";
+
+            HttpClient httpClient = new HttpClient();
+            string html = await httpClient.GetStringAsync(url);
+
+            HtmlDocument htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);
+
+            string InformatiiTabelCursValutarBNR = htmlDocument.DocumentNode.Descendants("table").ToList()[0].InnerText;
+
+            decimal EUR_TO_LEI = 4.9m;
+            decimal USD_TO_LEI = 4.1m;
+
+            Pret.Curs[Moneda.LEU] = 1m;
+
+            try
+            {
+                Pret.Curs[Moneda.EUR] = GetBNRCurs(InformatiiTabelCursValutarBNR, Moneda.EUR);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Pret.Curs[Moneda.EUR] = EUR_TO_LEI;
+            }
+
+            try
+            {
+                Pret.Curs[Moneda.USD] = GetBNRCurs(InformatiiTabelCursValutarBNR, Moneda.USD);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Pret.Curs[Moneda.USD] = USD_TO_LEI;
+            }
+
+            Console.WriteLine("Cursul a fost initializat!\n Apasa orice tasta pentru a continua");
+
+        }
     }
 }

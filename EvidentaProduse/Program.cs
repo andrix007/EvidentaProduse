@@ -11,7 +11,12 @@ namespace EvidentaProduse
     {
         static void Main(string[] args)
         {
-            Auxiliare.CursLive.WriteSpans();
+            Pret.InitializeazaCurs();
+
+            Console.ReadKey();
+            Console.Clear();
+
+            Pret.AfiseazaCurs();
 
             var Producatori = new List<Producator>
             {
