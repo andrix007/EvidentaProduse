@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EvidentaProduse.Auxiliare
 {
-    public static class Extensii
+    public static class Extensii //clasa de extensii
     {
 
-        public static bool inRange(this DateTime date, DateTime? startDate, DateTime? endDate)
+        public static bool inRange(this DateTime date, DateTime? startDate, DateTime? endDate) //verifica daca un DateTime este intre alte doua DateTime-uri
         {
             DateTime UTCdate = date.ToUniversalTime();
 
@@ -54,7 +54,7 @@ namespace EvidentaProduse.Auxiliare
             return ((date >= startDate && date <= endDate));
         }
 
-        public static string ToRoman(this int number)
+        public static string ToRoman(this int number) // extensie la un int ca sa transforme intr-un string roman pentru afisare corecta (ultimul punct din pdf)
         {
             if ((number < 0) || (number > 3999)) throw new ArgumentOutOfRangeException("insert value betwheen 1 and 3999");
             if (number < 1) return string.Empty;

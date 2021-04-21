@@ -8,7 +8,11 @@ namespace EvidentaProduse
 {
     public class Catalog : List<Produs>
     {
-        public List<Reducere> Reduceri { get; set; }
+        //aici mai trebuie (si o sa o fac) adaugate doua DateTime uri, deoarce m-am prins acum care este scopul lor
+
+        public List<Reducere> Reduceri { get; set; } //nu ar fi mai bine/eficient sa fie o singura lista/ un singur set static
+        //in clasa Produs cu reduceri si apoi in fiecare loc unde e necesar sa fie un set/ o lista de indici care sa specifice ce reduceri
+        // ar trebui aplicate?
 
         public void AfiseazaCatalog()
         {
@@ -19,6 +23,51 @@ namespace EvidentaProduse
                 Console.WriteLine(produs.ToString());
             }
 
+        }
+
+        public void Aboneaza(Client client) // metoda de aici cred (si sper ca e corecta) ca merge la abonare si foloseste si expresii lambda
+                                            //problemele vin la dezabonare:
+                                            /*
+                                             * 1. Nu mai am functia in sine ca sa pot sa dau -= sa dezabonez de la produsele respective
+                                             * 2. Nu stiu suficient de bine cum functioneaza dezabonarea la evenimente ca sa stiu ca
+                                             * merge 100% sa sterg aceeasi functie, deoarece clientii sunt diferiti
+                                             */
+        {
+            foreach(Produs produs in this)
+            {
+                foreach(Guid produsId in client.ProduseFavorite) //daca ar fi fost set acest foreach ar fi putut fi transformat intr-un 
+                {
+                    if(produsId == produs.Id)
+                    {
+                        produs.Pret.PriceChanged += (s, e) => 
+                        { 
+                            client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la" +
+                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}><{client.Moneda}>"); 
+                        };
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void Dezaboneaza(Client client) //cum ar fi cel mai bine sa dezabonez? daca fac abonarea intr-un alt mod dezabonarea ar deveni mai usor de facut?
+        {
+            foreach (Produs produs in this)
+            {
+                foreach (Guid produsId in client.ProduseFavorite.OrderBy(p => p)) //aici am dat orderby pentru ca mai tarziu in proiect (posibil la final) sa implementez o cautare binara ca sa faca
+                    //operatia in logn in loc de n (asta daca nu ajung sa folosesc colectia SortedSet)
+                {
+                    if (produsId == produs.Id)
+                    {   
+                        produs.Pret.PriceChanged -= (s, e) =>
+                        {
+                            client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la" +
+                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}><{client.Moneda}>");
+                        };
+                        break;
+                    }
+                }
+            }
         }
 
         public void InitializeazaCatalog(List<Producator> Producatori)

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using HtmlAgilityPack;
+using HtmlAgilityPack; //Trebuie instalat pachetul HtmlAgilityPack ca sa mearga (am cautat sa fac si cu selenium / alte metode doar ca nu stiu inca destul de bine 
+//async-ul si alte tehnologi de requesturi / api-uri ca aparent e mai explicit si mai greu (dar mai interesant) decat in python
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace EvidentaProduse.Auxiliare
 {
     public static class CursLive
     {
-        public static decimal GetBNRCurs(string s, Moneda moneda)
+        public static decimal GetBNRCurs(string s, Moneda moneda) //parseaza continutul tabelului care arata cursul valutar pentru euro si dolari
         {
             decimal Curs;
 
@@ -44,7 +45,7 @@ namespace EvidentaProduse.Auxiliare
 
             string InformatiiTabelCursValutarBNR = htmlDocument.DocumentNode.Descendants("table").ToList()[0].InnerText;
 
-            decimal EUR_TO_LEI = 4.9m;
+            decimal EUR_TO_LEI = 4.9m; //am valori normale aici in caz ca nu merge sa iau cursul de pe site
             decimal USD_TO_LEI = 4.1m;
 
             Pret.Curs[Moneda.LEU] = 1m;

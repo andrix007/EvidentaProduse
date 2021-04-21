@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvidentaProduse.DelegateArgs;
 
 namespace EvidentaProduse
 {
-    public enum Moneda { LEU, EUR, USD }; 
+    public enum Moneda { LEU, EUR, USD }; // Enumeratia de monede
 
     public class Pret
     {
-        public delegate void PriceChangedDelegate(object sender, EventArgs args);
-        public event PriceChangedDelegate PriceChanged;
+        public event EventHandler<PriceChangedArgs> PriceChanged; //Event pentru cand se schimba 
 
-        public static Dictionary<Moneda, decimal> Curs = new Dictionary<Moneda, decimal>();
+        public static Dictionary<Moneda, decimal> Curs = new Dictionary<Moneda, decimal>(); //cursul valutar
         public Moneda Moneda { get; set; }
 
         private decimal valoare;
@@ -25,14 +25,23 @@ namespace EvidentaProduse
             }
             set
             {
-                PriceChanged(this, new EventArgs());
+                OnPriceChanged(valoare,value); //aici activez eventul cand se schimba valoarea in proprietate
                 valoare = value;
+            }
+        }
+
+        private void OnPriceChanged(decimal pretVechi, decimal pretNou) //functie care aplica delegatul cand trebuie
+        {
+            var del = PriceChanged as EventHandler<PriceChangedArgs>;
+            if(del != null)
+            {
+                del(this, new PriceChangedArgs { PretNou = pretNou, PretVechi = pretVechi });
             }
         }
 
         public static void InitializeazaCurs()
         {
-            Auxiliare.CursLive.GetHtmlAsync();
+            Auxiliare.CursLive.GetHtmlAsync(); //functie async care face rost de cursul valutar
         }
 
         public static void AfiseazaCurs()

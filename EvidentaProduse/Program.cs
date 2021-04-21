@@ -11,12 +11,15 @@ namespace EvidentaProduse
     {
         static void Main(string[] args)
         {
-            Pret.InitializeazaCurs();
+            //Prin "set" mai incolo in comentarii ma refer la colectia SortedSet
+
+            Pret.InitializeazaCurs(); //functie care initializeaza cursul monetar dupa site-ul BNR
+            // de specificat ca este un proces async, chestie pe care nu am invatat-o temeinic si ar trebui lasata 0.5 secunde ca sa le ia de pe site
 
             Console.ReadKey();
             Console.Clear();
 
-            Pret.AfiseazaCurs();
+            Pret.AfiseazaCurs(); //afisez cursul valutar sa vad sa fie in regula
 
             var Producatori = new List<Producator>
             {
@@ -94,9 +97,10 @@ namespace EvidentaProduse
 
             Catalog catalog = new Catalog();
 
-            catalog.InitializeazaCatalog(Producatori);
+            catalog.InitializeazaCatalog(Producatori); //Initializez catalogul (am facut o functie ca sa fie mai normal codul si am
+            //nevoie de lista de producatori pentru ca nu vreau sa mai creez altii noi
 
-            catalog.AfiseazaCatalog();
+            catalog.AfiseazaCatalog(); //afisez sa vad ca e in regula
 
             var Clienti = new List<Client>()
             {
@@ -130,11 +134,11 @@ namespace EvidentaProduse
                         catalog[1].Id
                     }
                 }
-            };
+            }; //instantiez o lista de clienti
 
             foreach(Client client in Clienti)
             {
-                Console.WriteLine(client.ToString());
+                Console.WriteLine(client.ToString()); //afisez clientii dupa descrierea de la final din pdf cu functie suprascrisa ToString()
             }
 
         }

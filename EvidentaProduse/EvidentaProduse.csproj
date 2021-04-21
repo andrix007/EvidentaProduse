@@ -429,6 +429,8 @@
     <Compile Include="Auxiliare\Extensii.cs" />
     <Compile Include="Catalog.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="DelegateArgs\PriceChangedArgs.cs" />
+    <Compile Include="DelegateArgs\StockChangedArgs.cs" />
     <Compile Include="Pret.cs" />
     <Compile Include="Producator.cs" />
     <Compile Include="Produs.cs" />

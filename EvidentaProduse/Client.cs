@@ -9,13 +9,14 @@ namespace EvidentaProduse
 {
     public class Client
     {
-        private string[] Inbox = new string[10];
-        private static int nrMesajeInbox = -1;
+        private string[] Inbox = new string[10]; //de ce nu e lista Inboxul? ar fi avut aceeasi functionalitate si ar fi fost mai usor de folosit
+        private int nrMesajeInbox = -1; //index pentru mesaje inbox
         public string Email { get; set; }
         public Moneda Moneda { get; set; }
-        public List<Guid> ProduseFavorite { get; set; }
+        public List<Guid> ProduseFavorite { get; set; } //de ce nu este un set aceasta lista? ar fi fost mai usor cu gasirea elementelor in O(logn) in loc de 
+        // O(n) ca la lista (ar ajuta banuiesc atunci cand trebuie sa abonam clienti / dezabonam clienti la un catalog)
 
-        public bool Notifica(string mesaj)
+        public bool Notifica(string mesaj) 
         {
             if (mesaj.Length > 60)
             {
@@ -56,7 +57,7 @@ namespace EvidentaProduse
             temp = "";
             for(int i = 1; i <= nrMesajeInbox; i++)
             {
-                temp += $"{i.ToRoman()}. <{Inbox[i]}>\n".PadLeft(15);
+                temp += $"{i.ToRoman().ToString().ToLower()}. <{Inbox[i]}>\n".PadLeft(15);
             }
 
             mesaj += temp+"\n";
