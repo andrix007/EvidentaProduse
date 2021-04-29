@@ -9,15 +9,24 @@ namespace EvidentaProduse.Auxiliare
     public static class Extensii //clasa de extensii
     {
 
-        public static bool inRange(this DateTime date, DateTime? startDate, DateTime? endDate) //verifica daca un DateTime este intre alte doua DateTime-uri
+        public static bool InRange(this DateTime? date, DateTime? startDate, DateTime? endDate) //verifica daca un DateTime este intre alte doua DateTime-uri
         {
-            DateTime UTCdate = date.ToUniversalTime();
-
-            DateTime UTCstartDate;
-            DateTime UTCendDate;
-
+            bool isDateNull = false;
             bool isStartDateNull = false;
             bool isEndDateNull = false;
+
+            DateTime UTCdate = DateTime.MinValue;
+            DateTime UTCstartDate= DateTime.MinValue;
+            DateTime UTCendDate=DateTime.MinValue;
+
+            if(date == null)
+            {
+                isDateNull = true;
+            }
+            else
+            {
+                UTCdate = Convert.ToDateTime(date).ToUniversalTime();
+            }
 
             if (startDate == null)
             {
@@ -37,6 +46,11 @@ namespace EvidentaProduse.Auxiliare
                 UTCendDate = Convert.ToDateTime(endDate).ToUniversalTime();
             }
 
+            if(isDateNull)
+            {
+                throw new NullReferenceException("the date is null!\n");
+            }
+
             if(isEndDateNull && isStartDateNull)
             {
                 return false;
@@ -44,14 +58,14 @@ namespace EvidentaProduse.Auxiliare
 
             if(isEndDateNull)
             {
-                return (date >= startDate);
+                return (UTCdate >= UTCstartDate);
             }
             else if(isStartDateNull)
             {
-                return (date <= endDate);
+                return (UTCdate <= UTCendDate);
             }
 
-            return ((date >= startDate && date <= endDate));
+            return ((UTCdate >= UTCstartDate && UTCdate <= UTCendDate));
         }
 
         public static string ToRoman(this int number) // extensie la un int ca sa transforme intr-un string roman pentru afisare corecta (ultimul punct din pdf)

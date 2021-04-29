@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvidentaProduse.Auxiliare;
 
 namespace EvidentaProduse
 {
     public class Catalog : List<Produs>
     {
         //aici mai trebuie (si o sa o fac) adaugate doua DateTime uri, deoarce m-am prins acum care este scopul lor
+        public DateTime? PerioadaStart { get; set; }
+        public DateTime? PerioadaStop { get; set; }
 
         public List<Reducere> Reduceri { get; set; } //nu ar fi mai bine/eficient sa fie o singura lista/ un singur set static
         //in clasa Produs cu reduceri si apoi in fiecare loc unde e necesar sa fie un set/ o lista de indici care sa specifice ce reduceri
@@ -67,6 +70,21 @@ namespace EvidentaProduse
                         break;
                     }
                 }
+            }
+        }
+
+        private IEnumerable<Produs> AplicaReduceriProducator(Producator producator)
+        {
+            foreach(Produs produs in this)
+            {
+                foreach(Reducere reducere in producator.Reduceri)
+                {
+                    if(reducere.PerioadaStart.InRange(this.PerioadaStart,this.PerioadaStop) && reducere.PerioadaStop.InRange(this.PerioadaStart,this.PerioadaStop))
+                    {
+                        reducere.Aplica<Produs>(ref produs);
+                    }
+                }
+                yield return produs;
             }
         }
 
