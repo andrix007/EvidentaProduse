@@ -16,7 +16,8 @@ namespace EvidentaProduse
 
         public List<Reducere> Reduceri { get; set; }
 
-        public static Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>> AbonamenteClient = new Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>>();
+        //Dictionare care tin delegatii pe care ii elimin la dezabonare
+        public static Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>> AbonamenteClient = new Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>>(); 
         public static Dictionary<Client, Dictionary<Guid, EventHandler<StockChangedArgs>>> StocuriProduseFavoriteClient = new Dictionary<Client, Dictionary<Guid, EventHandler<StockChangedArgs>>>();
 
         public void AfiseazaCatalog()
@@ -32,7 +33,14 @@ namespace EvidentaProduse
 
         private void NotificaSchimbareStoc(Client client, Produs produs)
         {
-            bool ok = client.Notifica($"Produsul <{produs.Name}> este din nou in stoc!");
+            try
+            {
+                bool ok = client.Notifica($"Produsul <{produs.Name}> este din nou in stoc!");
+            }
+            catch (Exception oomex)
+            {
+                Console.WriteLine(oomex.Message);
+            }
         }
 
         public void Aboneaza(Client client)
@@ -48,8 +56,15 @@ namespace EvidentaProduse
                     {
                         Action<object, PriceChangedArgs> a = (s, e) =>
                         {
-                            bool ok = client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la " +
-                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}> <{client.Moneda}>");
+                            try
+                            {
+                                bool ok = client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la " +
+                                    $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}> <{client.Moneda}>");
+                            }
+                            catch(Exception oomex)
+                            {
+                                Console.WriteLine(oomex.Message);
+                            }
                         };
 
                         Action<object, StockChangedArgs> sa = (s,e) => NotificaSchimbareStoc(client, produs);
@@ -69,6 +84,7 @@ namespace EvidentaProduse
             }
 
             AbonamenteClient.Add(client, DictionarProduseActiuni);
+            StocuriProduseFavoriteClient.Add(client, DictionarStocuriActiuni);
         }
 
         public void Dezaboneaza(Client client) 
@@ -90,8 +106,8 @@ namespace EvidentaProduse
                         EventHandler<PriceChangedArgs> a = DictionarProduseActiuni[produsId];
                         EventHandler<StockChangedArgs> sa = DictionarStocuriActiuni[produsId];
 
-                        produs.Pret.PriceChanged -= new EventHandler<PriceChangedArgs>(a);
-                        produs.StockChanged -= new EventHandler<StockChangedArgs>(sa);
+                        produs.Pret.PriceChanged -= a;
+                        produs.StockChanged -= sa;
 
                         break;
                     }

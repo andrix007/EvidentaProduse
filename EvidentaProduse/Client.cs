@@ -9,8 +9,8 @@ using EvidentaProduse.DelegateArgs;
 namespace EvidentaProduse
 {
     public class Client
-    {
-        private string[] Inbox = new string[10]; 
+    { 
+        private string[] Inbox = new string[50]; //am facut thresholdul 40 pentru ca altfel erau prea multe mesaje in inbox
         private int nrMesajeInbox = -1; 
         public string Email { get; set; }
         public Moneda Moneda { get; set; }
@@ -23,7 +23,7 @@ namespace EvidentaProduse
                 Console.WriteLine("Mesajul este prea mare!");
                 return false;
             }
-            if(nrMesajeInbox+1 > 10)
+            if(nrMesajeInbox+1 > 50)
             {
                 throw new OutOfMemoryException("Prea multe mesaje in Inbox!!!");
             }
@@ -58,7 +58,7 @@ namespace EvidentaProduse
             temp = "";
             for(int i = 0; i <= nrMesajeInbox; i++)
             {
-                temp += $"{(i+1).ToRoman().ToString().ToLower()}. <{Inbox[i]}>\n".PadLeft(15);
+                temp += $"{(i+1).ToRoman().ToString().ToLower().PadLeft(7)}. <{Inbox[i]}>\n";
             }
 
             mesaj += temp+"\n";

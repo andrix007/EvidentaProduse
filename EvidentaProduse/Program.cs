@@ -149,19 +149,23 @@ namespace EvidentaProduse
             foreach(Client client in Clienti)
             {
                 catalog.Aboneaza(client);
-                try
-                {
-                    catalog.Dezaboneaza(client);
-                }
-                catch(KeyNotFoundException kex)
-                {
-                    continue;
-                }
+
+                // Dezabonarea merge cum merge si abonarea, le-am testat
+
+                //try
+                //{
+                //    catalog.Dezaboneaza(client);
+                //}
+                //catch(KeyNotFoundException kex)
+                //{
+                //    //Console.WriteLine(kex.Message);
+                //    continue;
+                //}
             }
 #if DEBUG
-            catalog.AplicaReduceri((p) => { p.Pret.Valoare -= 10m ; });
+            catalog.AplicaReduceri((p) => { p.Pret.Valoare -= 10m ; }); 
 #else
-                        catalog.AplicaReduceri();
+                        catalog.AplicaReduceri(); //functioneaza si asta, am testat-o
 #endif
 
 
