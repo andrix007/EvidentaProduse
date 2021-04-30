@@ -32,11 +32,7 @@ namespace EvidentaProduse
 
         private void OnPriceChanged(decimal pretVechi, decimal pretNou) //functie care aplica delegatul cand trebuie
         {
-            var del = PriceChanged as EventHandler<PriceChangedArgs>;
-            if(del != null)
-            {
-                del(this, new PriceChangedArgs { PretNou = pretNou, PretVechi = pretVechi });
-            }
+            PriceChanged?.Invoke(this, new PriceChangedArgs { PretNou = pretNou, PretVechi = pretVechi });
         }
 
         public static void InitializeazaCurs()

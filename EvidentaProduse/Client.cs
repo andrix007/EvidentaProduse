@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvidentaProduse.Auxiliare;
+using EvidentaProduse.DelegateArgs;
 
 namespace EvidentaProduse
 {
     public class Client
     {
-        private string[] Inbox = new string[10]; //de ce nu e lista Inboxul? ar fi avut aceeasi functionalitate si ar fi fost mai usor de folosit
-        private int nrMesajeInbox = -1; //index pentru mesaje inbox
+        private string[] Inbox = new string[10]; 
+        private int nrMesajeInbox = -1; 
         public string Email { get; set; }
         public Moneda Moneda { get; set; }
-        public List<Guid> ProduseFavorite { get; set; } //de ce nu este un set aceasta lista? ar fi fost mai usor cu gasirea elementelor in O(logn) in loc de 
-        // O(n) ca la lista (ar ajuta banuiesc atunci cand trebuie sa abonam clienti / dezabonam clienti la un catalog)
+        public List<Guid> ProduseFavorite { get; set; }
 
         public bool Notifica(string mesaj) 
         {

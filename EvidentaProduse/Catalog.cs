@@ -4,18 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvidentaProduse.Auxiliare;
+using EvidentaProduse.DelegateArgs;
 
 namespace EvidentaProduse
 {
     public class Catalog : List<Produs>
     {
-        //aici mai trebuie (si o sa o fac) adaugate doua DateTime uri, deoarce m-am prins acum care este scopul lor
+
         public DateTime? PerioadaStart { get; set; }
         public DateTime? PerioadaStop { get; set; }
 
-        public List<Reducere> Reduceri { get; set; } //nu ar fi mai bine/eficient sa fie o singura lista/ un singur set static
-        //in clasa Produs cu reduceri si apoi in fiecare loc unde e necesar sa fie un set/ o lista de indici care sa specifice ce reduceri
-        // ar trebui aplicate?
+        public List<Reducere> Reduceri { get; set; }
+
+        public static Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>> AbonamenteClient = new Dictionary<Client, Dictionary<Guid, EventHandler<PriceChangedArgs>>>();
+        public static Dictionary<Client, Dictionary<Guid, EventHandler<StockChangedArgs>>> StocuriProduseFavoriteClient = new Dictionary<Client, Dictionary<Guid, EventHandler<StockChangedArgs>>>();
 
         public void AfiseazaCatalog()
         {
@@ -28,45 +30,69 @@ namespace EvidentaProduse
 
         }
 
-        public void Aboneaza(Client client) // metoda de aici cred (si sper ca e corecta) ca merge la abonare si foloseste si expresii lambda
-                                            //problemele vin la dezabonare:
-                                            /*
-                                             * 1. Nu mai am functia in sine ca sa pot sa dau -= sa dezabonez de la produsele respective
-                                             * 2. Nu stiu suficient de bine cum functioneaza dezabonarea la evenimente ca sa stiu ca
-                                             * merge 100% sa sterg aceeasi functie, deoarece clientii sunt diferiti
-                                             */
+        private void NotificaSchimbareStoc(Produs produs)
         {
-            foreach(Produs produs in this)
+            Console.WriteLine($"Produsul <{produs.Name}> este din nou in stoc!");
+        }
+
+        public void Aboneaza(Client client)
+        {
+            Dictionary<Guid, EventHandler<PriceChangedArgs>> DictionarProduseActiuni = new Dictionary<Guid, EventHandler<PriceChangedArgs>>();
+            Dictionary<Guid, EventHandler<StockChangedArgs>> DictionarStocuriActiuni = new Dictionary<Guid, EventHandler<StockChangedArgs>>();
+
+            foreach (Produs produs in this)
             {
-                foreach(Guid produsId in client.ProduseFavorite) //daca ar fi fost set acest foreach ar fi putut fi transformat intr-un 
+                foreach(Guid produsId in client.ProduseFavorite) 
                 {
                     if(produsId == produs.Id)
                     {
-                        produs.Pret.PriceChanged += (s, e) => 
-                        { 
-                            client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la" +
-                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}><{client.Moneda}>"); 
-                        };
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void Dezaboneaza(Client client) //cum ar fi cel mai bine sa dezabonez? daca fac abonarea intr-un alt mod dezabonarea ar deveni mai usor de facut?
-        {
-            foreach (Produs produs in this)
-            {
-                foreach (Guid produsId in client.ProduseFavorite.OrderBy(p => p)) //aici am dat orderby pentru ca mai tarziu in proiect (posibil la final) sa implementez o cautare binara ca sa faca
-                    //operatia in logn in loc de n (asta daca nu ajung sa folosesc colectia SortedSet)
-                {
-                    if (produsId == produs.Id)
-                    {   
-                        produs.Pret.PriceChanged -= (s, e) =>
+                        Action<object, PriceChangedArgs> a = (s, e) =>
                         {
                             client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la" +
                                 $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}><{client.Moneda}>");
                         };
+
+                        Action<object, StockChangedArgs> sa = (s,e) => NotificaSchimbareStoc(produs);
+
+                        EventHandler<PriceChangedArgs> ea = new EventHandler<PriceChangedArgs>(a);
+                        EventHandler<StockChangedArgs> esa = new EventHandler<StockChangedArgs>(sa);
+
+                        produs.Pret.PriceChanged += ea;
+                        produs.StockChanged += esa;
+
+                        DictionarProduseActiuni.Add(produsId, ea);
+                        DictionarStocuriActiuni.Add(produsId, esa);
+
+                        break;
+                    }
+                }
+            }
+
+            AbonamenteClient.Add(client, DictionarProduseActiuni);
+        }
+
+        public void Dezaboneaza(Client client) 
+        {
+            if(!AbonamenteClient.ContainsKey(client))
+            {
+                throw new ArgumentException("Clientul nu este abonat!");
+            }
+
+            Dictionary<Guid, EventHandler<PriceChangedArgs>> DictionarProduseActiuni = AbonamenteClient[client];
+            Dictionary<Guid, EventHandler<StockChangedArgs>> DictionarStocuriActiuni = StocuriProduseFavoriteClient[client];
+
+            foreach (Produs produs in this)
+            {
+                foreach (Guid produsId in client.ProduseFavorite.OrderBy(p => p)) 
+                {
+                    if (produsId == produs.Id)
+                    {
+                        EventHandler<PriceChangedArgs> a = DictionarProduseActiuni[produsId];
+                        EventHandler<StockChangedArgs> sa = DictionarStocuriActiuni[produsId];
+
+                        produs.Pret.PriceChanged -= new EventHandler<PriceChangedArgs>(a);
+                        produs.StockChanged -= new EventHandler<StockChangedArgs>(sa);
+
                         break;
                     }
                 }

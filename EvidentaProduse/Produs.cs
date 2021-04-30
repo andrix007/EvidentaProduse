@@ -56,13 +56,9 @@ namespace EvidentaProduse
         private string name;
         private uint stoc=0;
 
-        public void OnStockChanged(uint stocVechi, uint stocNou) //asta cred ca ar trebui legata doar la produsele de care e interesat clientul
+        public void OnStockChanged(uint stocVechi, uint stocNou)
         {
-            var del = StockChanged as EventHandler<StockChangedArgs>;
-            if(del != null)
-            {
-                del(this, new StockChangedArgs{ StocNou = stocNou, StocVechi = stocVechi});
-            }
+            StockChanged?.Invoke(this, new StockChangedArgs{ StocNou = stocNou, StocVechi = stocVechi});
         }
 
         public override string ToString()

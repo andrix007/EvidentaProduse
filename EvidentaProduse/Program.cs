@@ -11,7 +11,7 @@ namespace EvidentaProduse
     {
         static void Main(string[] args)
         {
-            Reducere.Aplica < Produs > += Reducere.AplicaReducereScadere;
+
             //Prin "set" mai incolo in comentarii ma refer la colectia SortedSet
 
             Pret.InitializeazaCurs(); //functie care initializeaza cursul monetar dupa site-ul BNR
