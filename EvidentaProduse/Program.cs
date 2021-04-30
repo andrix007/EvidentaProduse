@@ -7,9 +7,9 @@ using System.Globalization;
 
 namespace EvidentaProduse
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
 
             //Prin "set" mai incolo in comentarii ma refer la colectia SortedSet
@@ -33,17 +33,20 @@ namespace EvidentaProduse
                         {
                             Name = "iBlack Friday",
                             PerioadaStart = new DateTime(2021, 11, 5,0,0,0,DateTimeKind.Local).ToUniversalTime(),
-                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 15; }
                         },
                         new Reducere
                         {
                             Name = "iValentines Day",
-                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 15; }
                         },
                         new Reducere
                         {
                             Name = "iHelloween",
-                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 15; }
                         }
                     }
                 },
@@ -56,17 +59,20 @@ namespace EvidentaProduse
                         {
                             Name = "McBlack",
                             PerioadaStart = new DateTime(2021, 11, 5,0,0,0,DateTimeKind.Local).ToUniversalTime(),
-                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 17; }
                         },
                         new Reducere
                         {
                             Name = "McLove",
-                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 17; }
                         },
                         new Reducere
                         {
                             Name = "McWeen",
-                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 17; }
                         }
                     }
                 },
@@ -79,17 +85,20 @@ namespace EvidentaProduse
                         {
                             Name = "Never try to outpizza the hut again!",
                             PerioadaStart = new DateTime(2021, 11, 5,0,0,0,DateTimeKind.Local).ToUniversalTime(),
-                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 11, 6,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 13; }
                         },
                         new Reducere
                         {
                             Name = "Double pizza for the single people out there",
-                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStart = new DateTime(2022, 2, 11,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 13; }
                         },
                         new Reducere
                         {
                             Name = "Spoooky pizza with pumpkin on sale",
-                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime()
+                            PerioadaStop = new DateTime(2021, 10, 28,0,0,0,DateTimeKind.Local).ToUniversalTime(),
+                            Aplica = (p) => {p.Pret.Valoare -= 13; }
                         }
                     }
                 },
@@ -139,8 +148,31 @@ namespace EvidentaProduse
 
             foreach(Client client in Clienti)
             {
-                Console.WriteLine(client.ToString()); //afisez clientii dupa descrierea de la final din pdf cu functie suprascrisa ToString()
+                catalog.Aboneaza(client);
+                try
+                {
+                    catalog.Dezaboneaza(client);
+                }
+                catch(KeyNotFoundException kex)
+                {
+                    continue;
+                }
             }
+#if DEBUG
+            catalog.AplicaReduceri((p) => { p.Pret.Valoare -= 10m ; });
+#else
+                        catalog.AplicaReduceri();
+#endif
+
+
+            catalog[0].Stoc = 1;
+            catalog[0].Pret.Valoare += 100m; //testeaza sa vada daca se fac cum trebuie eventurile
+
+            foreach(Client client in Clienti)
+            {
+                Console.WriteLine(client.ToString());
+            }
+
 
         }
     }

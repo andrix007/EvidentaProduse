@@ -30,9 +30,9 @@ namespace EvidentaProduse
 
         }
 
-        private void NotificaSchimbareStoc(Produs produs)
+        private void NotificaSchimbareStoc(Client client, Produs produs)
         {
-            Console.WriteLine($"Produsul <{produs.Name}> este din nou in stoc!");
+            bool ok = client.Notifica($"Produsul <{produs.Name}> este din nou in stoc!");
         }
 
         public void Aboneaza(Client client)
@@ -48,11 +48,11 @@ namespace EvidentaProduse
                     {
                         Action<object, PriceChangedArgs> a = (s, e) =>
                         {
-                            client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la" +
-                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}><{client.Moneda}>");
+                            bool ok = client.Notifica($"Pretul produsului <{produs.Name}> s-a schimbat de la " +
+                                $"<{e.PretVechi}> <{client.Moneda}> la <{e.PretNou}> <{client.Moneda}>");
                         };
 
-                        Action<object, StockChangedArgs> sa = (s,e) => NotificaSchimbareStoc(produs);
+                        Action<object, StockChangedArgs> sa = (s,e) => NotificaSchimbareStoc(client, produs);
 
                         EventHandler<PriceChangedArgs> ea = new EventHandler<PriceChangedArgs>(a);
                         EventHandler<StockChangedArgs> esa = new EventHandler<StockChangedArgs>(sa);
@@ -107,15 +107,52 @@ namespace EvidentaProduse
                 {
                     if(reducere.PerioadaStart.InRange(this.PerioadaStart,this.PerioadaStop) && reducere.PerioadaStop.InRange(this.PerioadaStart,this.PerioadaStop))
                     {
-                        reducere.Aplica<Produs>(ref produs);
+                        reducere.Aplica(produs);
                     }
                 }
                 yield return produs;
             }
         }
 
+        public void AplicaReduceri()
+        {
+            foreach (Reducere reducere in this.Reduceri)
+            {
+                foreach (Produs produs in this)
+                {
+                    reducere.Aplica(produs);
+                }
+            }
+
+            for (int i = this.Count - 1; i >= 0; i--)
+            {
+                Produs produs = this[i];
+                AplicaReduceriProducator(produs.Producator);
+            }
+
+            foreach(Produs produs in this)
+            {
+                if(produs.Stoc == 0 && produs.Pret.ConvertToEuro() < 10m)
+                {
+                    produs.Stoc += 100;
+                }
+            }
+
+        }
+
+        public void AplicaReduceri(Action<Produs> a)
+        {
+            foreach(Produs produs in this)
+            {
+                a(produs);
+            }
+        }
+
         public void InitializeazaCatalog(List<Producator> Producatori)
         {
+            PerioadaStart = DateTime.MinValue;
+            PerioadaStop = DateTime.MaxValue;
+
             Reduceri = new List<Reducere>
                 {
                     Producatori[0].Reduceri[0],
@@ -137,7 +174,7 @@ namespace EvidentaProduse
                     Moneda = Moneda.EUR,
                     Valoare = 10m
                 },
-                Stoc = 3,
+                Stoc = 0,
                 Producator = Producatori[0]
             });
             Add(new Produs

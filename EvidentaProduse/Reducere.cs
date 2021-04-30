@@ -13,12 +13,7 @@ namespace EvidentaProduse
         public string Name { get; set; }
         public DateTime? PerioadaStart { get; set; }
         public DateTime? PerioadaStop { get; set; }
-        public delegate void Aplica<T>(T p) ; //aici inca trebuia sa ma mai uit
-        
+        public Action<Produs> Aplica;
 
-        public static void AplicaReducereScadere(ref Produs p)
-        {
-            p.Pret.Valoare -= 1m;
-        }
     }
 }

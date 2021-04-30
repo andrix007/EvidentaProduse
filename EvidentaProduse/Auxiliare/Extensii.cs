@@ -8,6 +8,21 @@ namespace EvidentaProduse.Auxiliare
 {
     public static class Extensii //clasa de extensii
     {
+        public static decimal ConvertToEuro(this Pret pret)
+        {
+            if(pret.Moneda == Moneda.EUR)
+            {
+                return pret.Valoare;
+            }
+
+            if(pret.Moneda == Moneda.LEU)
+            {
+                return pret.Valoare / Pret.Curs[Moneda.EUR];
+            }
+
+            decimal pretInLei = pret.Valoare * Pret.Curs[Moneda.USD];
+            return pretInLei / Pret.Curs[Moneda.EUR];
+        }
 
         public static bool InRange(this DateTime? date, DateTime? startDate, DateTime? endDate) //verifica daca un DateTime este intre alte doua DateTime-uri
         {

@@ -18,8 +18,9 @@ namespace EvidentaProduse
 
         public bool Notifica(string mesaj) 
         {
-            if (mesaj.Length > 60)
+            if (mesaj.Length > 100) //am schimbat la 100 ca 60 era prea mic
             {
+                Console.WriteLine("Mesajul este prea mare!");
                 return false;
             }
             if(nrMesajeInbox+1 > 10)
@@ -55,9 +56,9 @@ namespace EvidentaProduse
             mesaj += "c. Inbox:\n";
 
             temp = "";
-            for(int i = 1; i <= nrMesajeInbox; i++)
+            for(int i = 0; i <= nrMesajeInbox; i++)
             {
-                temp += $"{i.ToRoman().ToString().ToLower()}. <{Inbox[i]}>\n".PadLeft(15);
+                temp += $"{(i+1).ToRoman().ToString().ToLower()}. <{Inbox[i]}>\n".PadLeft(15);
             }
 
             mesaj += temp+"\n";
