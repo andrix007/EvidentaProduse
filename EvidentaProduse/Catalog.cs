@@ -113,6 +113,10 @@ namespace EvidentaProduse
                     }
                 }
             }
+
+            AbonamenteClient.Remove(client);
+            StocuriProduseFavoriteClient.Remove(client);
+
         }
 
         private IEnumerable<Produs> AplicaReduceriProducator(Producator producator)
